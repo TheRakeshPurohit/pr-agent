@@ -199,7 +199,7 @@ class PRDescription:
 
     async def _prepare_prediction(self, model: str) -> None:
         if get_settings().pr_description.use_description_markers and 'pr_agent:' not in self.user_description:
-            get_logger().info("Markers were enabled, but user description does not contain markers. skipping AI prediction")
+            get_logger().info("Markers were enabled, but user description does not contain markers. Skipping AI prediction")
             return None
 
         large_pr_handling = get_settings().pr_description.enable_large_pr_handling and "pr_description_only_files_prompts" in get_settings()
@@ -507,10 +507,10 @@ class PRDescription:
         ai_type = self.data.get('type')
         if ai_type and not re.search(r'<!--\s*pr_agent:type\s*-->', body):
             if isinstance(ai_type, list):
-                pr_types = [f"{ai_header}{t}" for t in ai_type]
-                pr_type = ','.join(pr_types)
+                pr_type = ', '.join(str(t) for t in ai_type)
             else:
-                pr_type = f"{ai_header}{ai_type}"
+                pr_type = ai_type
+            pr_type = f"{ai_header}{pr_type}"
             body = body.replace('pr_agent:type', pr_type)
 
         ai_summary = self.data.get('description')
@@ -707,7 +707,7 @@ class PRDescription:
             pr_body += """</tr></tbody></table>"""
 
         except Exception as e:
-            get_logger().error(f"Error processing pr files to markdown {self.pr_id}: {str(e)}")
+            get_logger().error(f"Error processing PR files to markdown {self.pr_id}: {str(e)}")
             pass
         return pr_body, pr_comments
 
